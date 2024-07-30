@@ -38,7 +38,7 @@ fun getCompanies(): List<ResultRow> {
 fun createUser(companyId: Int, userName: String, email: String, password: String) {
     transaction {
         Users.insert {
-            it[Users.company] = companyId
+            it[Users.companyId] = companyId
             it[Users.userName] = userName
             it[Users.email] = email
             it[Users.password] = password
@@ -62,7 +62,7 @@ fun createClient(
 ) {
     transaction {
         Clients.insert {
-            it[Clients.company] = companyId
+            it[Clients.companyId] = companyId
             it[Clients.corporateName] = corporateName
             it[Clients.representativeName] = representativeName
             it[Clients.phoneNumber] = phoneNumber
@@ -87,7 +87,7 @@ fun createClientBankAccount(
 ) {
     transaction {
         ClientBankAccounts.insert {
-            it[ClientBankAccounts.client] = clientId
+            it[ClientBankAccounts.clientId] = clientId
             it[ClientBankAccounts.bankName] = bankName
             it[ClientBankAccounts.branchName] = branchName
             it[ClientBankAccounts.accountNumber] = accountNumber
@@ -117,8 +117,8 @@ fun createInvoice(
 ) {
     transaction {
         Invoices.insert {
-            it[Invoices.company] = companyId
-            it[Invoices.client] = clientId
+            it[Invoices.companyId] = companyId
+            it[Invoices.clientId] = clientId
             it[Invoices.issueDate] = issueDate
             it[Invoices.paymentAmount] = paymentAmount
             it[Invoices.fee] = fee

@@ -10,14 +10,14 @@ object Companies : IntIdTable() {
 }
 
 object Users : IntIdTable() {
-    val company = reference("companyId", Companies)
+    val companyId = reference("companyId", Companies)
     val userName = varchar("userName", 255)
     val email = varchar("email", 255).uniqueIndex()
     val password = varchar("password", 255)
 }
 
 object Clients : IntIdTable() {
-    val company = reference("companyId", Companies)
+    val companyId = reference("companyId", Companies)
     val corporateName = varchar("corporateName", 255)
     val representativeName = varchar("representativeName", 255)
     val phoneNumber = varchar("phoneNumber", 20).nullable()
@@ -26,7 +26,7 @@ object Clients : IntIdTable() {
 }
 
 object ClientBankAccounts : IntIdTable() {
-    val client = reference("clientId", Clients)
+    val clientId = reference("clientId", Clients)
     val bankName = varchar("bankName", 255)
     val branchName = varchar("branchName", 255)
     val accountNumber = varchar("accountNumber", 20)
@@ -34,8 +34,8 @@ object ClientBankAccounts : IntIdTable() {
 }
 
 object Invoices : IntIdTable() {
-    val company = reference("companyId", Companies)
-    val client = reference("clientId", Clients)
+    val companyId = reference("companyId", Companies)
+    val clientId = reference("clientId", Clients)
     val issueDate = date("issueDate")
     val paymentAmount = decimal("paymentAmount", 10, 2)
     val fee = decimal("fee", 10, 2).nullable()

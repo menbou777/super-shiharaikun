@@ -21,34 +21,57 @@ class InvoiceMapper(private val database: Database) {
         newSuspendedTransaction(Dispatchers.IO) { block() }
 
     suspend fun create(
-        companyId: Int,
-        clientId: Int,
-        issueDate: LocalDate,
-        paymentAmount: BigDecimal,
-        fee: BigDecimal?,
-        feeRate: BigDecimal?,
-        consumptionTax: BigDecimal?,
-        consumptionTaxRate: BigDecimal?,
-        invoiceAmount: BigDecimal,
-        paymentDueDate: LocalDate?,
-        status: InvoiceStatus
+        invoice: InvoiceDto
     ) {
         dbQuery {
             Invoices.insert {
-                it[Invoices.company] = companyId
-                it[Invoices.client] = clientId
-                it[Invoices.issueDate] = issueDate
-                it[Invoices.paymentAmount] = paymentAmount
-                it[Invoices.fee] = fee
-                it[Invoices.feeRate] = feeRate
-                it[Invoices.consumptionTax] = consumptionTax
-                it[Invoices.consumptionTaxRate] = consumptionTaxRate
-                it[Invoices.invoiceAmount] = invoiceAmount
-                it[Invoices.paymentDueDate] = paymentDueDate
-                it[Invoices.status] = status
+                it[Invoices.companyId] = invoice.companyId
+                it[Invoices.clientId] = invoice.clientId
+                it[Invoices.issueDate] = invoice.issueDate
+                it[Invoices.paymentAmount] = invoice.paymentAmount
+                it[Invoices.fee] = invoice.fee
+                it[Invoices.feeRate] = invoice.feeRate
+                it[Invoices.consumptionTax] = invoice.consumptionTax
+                it[Invoices.consumptionTaxRate] = invoice.consumptionTaxRate
+                it[Invoices.invoiceAmount] = invoice.invoiceAmount
+                it[Invoices.paymentDueDate] = invoice.paymentDueDate
+                it[Invoices.status] = invoice.status
             }
         }
     }
 
+    suspend fun get(): List<InvoiceDto> {
+        return dbQuery {
+            Invoices.selectAll().map {
+                InvoiceDto(
+                    it[Invoices.companyId].value,
+                    it[Invoices.clientId].value,
+                    it[Invoices.issueDate],
+                    it[Invoices.paymentAmount],
+                    it[Invoices.fee],
+                    it[Invoices.feeRate],
+                    it[Invoices.consumptionTax],
+                    it[Invoices.consumptionTaxRate],
+                    it[Invoices.invoiceAmount],
+                    it[Invoices.paymentDueDate],
+                    it[Invoices.status]
+                )
+            }
+        }
+    }
+
+    data class InvoiceDto(
+        val companyId: Int,
+        val clientId: Int,
+        val issueDate: LocalDate,
+        val paymentAmount: BigDecimal,
+        val fee: BigDecimal?,
+        val feeRate: BigDecimal?,
+        val consumptionTax: BigDecimal?,
+        val consumptionTaxRate: BigDecimal?,
+        val invoiceAmount: BigDecimal,
+        val paymentDueDate: LocalDate?,
+        val status: InvoiceStatus
+    )
 }
 
