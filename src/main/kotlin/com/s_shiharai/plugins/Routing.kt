@@ -18,6 +18,7 @@ fun Application.configureRouting() {
 
     val invoiceService = InvoiceServiceImpl(database)
     routing {
+        // === 請求書関連の処理
         get("/invoice") {
             val from = LocalDate.parse(call.parameters["from"])
             val to = LocalDate.parse(call.parameters["to"])
@@ -32,6 +33,14 @@ fun Application.configureRouting() {
                 call.parameters["amount"]?.toBigDecimal() ?: throw IllegalArgumentException("Invalid Amount")
             )
             call.respond(HttpStatusCode.OK, invoice)
+        }
+
+        // === login 処理 ===
+        post("/login"){
+            val username = call.parameters["username"] ?: return@post call.respond(HttpStatusCode.Unauthorized, "Missing Username")
+            val password = call.parameters["password"] ?: return@post call.respond(HttpStatusCode.Unauthorized, "Missing Password")
+
+
         }
     }
 }
