@@ -6,6 +6,9 @@ import org.jetbrains.exposed.sql.transactions.transaction
 import org.jetbrains.exposed.sql.transactions.experimental.newSuspendedTransaction
 import kotlinx.coroutines.Dispatchers
 import org.jetbrains.exposed.sql.*
+import org.jetbrains.exposed.sql.SqlExpressionBuilder.between
+import org.jetbrains.exposed.sql.SqlExpressionBuilder.bitwiseOr
+import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import java.math.BigDecimal
 import java.time.LocalDate
 
@@ -22,7 +25,7 @@ class InvoiceMapper(private val database: Database) {
 
     suspend fun create(
         invoice: InvoiceDto
-    ) {
+    ): InvoiceDto {
         dbQuery {
             Invoices.insert {
                 it[Invoices.companyId] = invoice.companyId
@@ -38,11 +41,12 @@ class InvoiceMapper(private val database: Database) {
                 it[Invoices.status] = invoice.status
             }
         }
+        return invoice
     }
 
-    suspend fun get(): List<InvoiceDto> {
+    suspend fun get(from: LocalDate, to: LocalDate): List<InvoiceDto> {
         return dbQuery {
-            Invoices.selectAll().map {
+            Invoices.select(Invoices.paymentDueDate.between(from, to)).map {
                 InvoiceDto(
                     it[Invoices.companyId].value,
                     it[Invoices.clientId].value,
@@ -65,12 +69,12 @@ class InvoiceMapper(private val database: Database) {
         val clientId: Int,
         val issueDate: LocalDate,
         val paymentAmount: BigDecimal,
-        val fee: BigDecimal?,
-        val feeRate: BigDecimal?,
-        val consumptionTax: BigDecimal?,
-        val consumptionTaxRate: BigDecimal?,
+        val fee: BigDecimal,
+        val feeRate: BigDecimal,
+        val consumptionTax: BigDecimal,
+        val consumptionTaxRate: BigDecimal,
         val invoiceAmount: BigDecimal,
-        val paymentDueDate: LocalDate?,
+        val paymentDueDate: LocalDate,
         val status: InvoiceStatus
     )
 }

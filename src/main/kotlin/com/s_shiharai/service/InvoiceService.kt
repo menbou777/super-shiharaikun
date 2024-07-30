@@ -1,15 +1,13 @@
 package com.s_shiharai.service
 
 import com.s_shiharai.database.mapper.InvoiceMapper
-import kotlinx.serialization.Contextual
-import kotlinx.serialization.Serializable
 import org.jetbrains.exposed.sql.Database
 import java.math.BigDecimal
 import java.time.LocalDate
 
 interface InvoiceService {
-    suspend fun requestInvoice(amount: BigDecimal)
-    suspend fun getInvoices(): List<Invoice>
+    suspend fun requestInvoice(amount: BigDecimal): Invoice
+    suspend fun getInvoices(from: LocalDate, to: LocalDate): List<Invoice>
 }
 
 class InvoiceServiceImpl(database: Database) : InvoiceService {
@@ -21,7 +19,7 @@ class InvoiceServiceImpl(database: Database) : InvoiceService {
     private val taxRate = BigDecimal(1.1)
 
 
-    override suspend fun requestInvoice(payment: BigDecimal) {
+    override suspend fun requestInvoice(payment: BigDecimal): Invoice {
 
         //TODO Login user の情報をcontext から取得する
         val currentCompanyId = 1
@@ -31,7 +29,7 @@ class InvoiceServiceImpl(database: Database) : InvoiceService {
         val tax = fee.multiply(taxRate)
         val invoiceAmount = payment + tax
 
-        invoiceMapper.create(
+        val record = invoiceMapper.create(
             InvoiceMapper.InvoiceDto(
                 companyId = currentCompanyId,
                 clientId = currentClientId,
@@ -46,10 +44,24 @@ class InvoiceServiceImpl(database: Database) : InvoiceService {
                 status = InvoiceStatus.Pending
             )
         )
+
+        return Invoice(
+            record.companyId,
+            record.clientId,
+            record.issueDate,
+            record.paymentAmount,
+            record.fee,
+            record.feeRate,
+            record.consumptionTax,
+            record.consumptionTaxRate,
+            record.invoiceAmount,
+            record.paymentDueDate,
+            record.status.name
+        )
     }
 
-    override suspend fun getInvoices(): List<Invoice> {
-        return invoiceMapper.get().map {
+    override suspend fun getInvoices(from: LocalDate, to: LocalDate): List<Invoice> {
+        return invoiceMapper.get(from, to).map {
             Invoice(
                 it.companyId,
                 it.clientId,
@@ -73,11 +85,11 @@ data class Invoice(
     val clientId: Int,
     val issueDate: LocalDate,
     val paymentAmount: BigDecimal,
-    val fee: BigDecimal?,
-    val feeRate: BigDecimal?,
-    val consumptionTax: BigDecimal?,
-    val consumptionTaxRate: BigDecimal?,
+    val fee: BigDecimal,
+    val feeRate: BigDecimal,
+    val consumptionTax: BigDecimal,
+    val consumptionTaxRate: BigDecimal,
     val invoiceAmount: BigDecimal,
-    val paymentDueDate: LocalDate?,
+    val paymentDueDate: LocalDate,
     val status: String
 )

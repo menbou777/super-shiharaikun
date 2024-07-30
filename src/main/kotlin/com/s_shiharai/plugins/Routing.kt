@@ -5,8 +5,8 @@ import io.ktor.http.HttpStatusCode
 import io.ktor.server.application.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
-import io.ktor.util.logging.Logger
 import org.jetbrains.exposed.sql.Database
+import java.time.LocalDate
 
 
 fun Application.configureRouting() {
@@ -19,17 +19,19 @@ fun Application.configureRouting() {
     val invoiceService = InvoiceServiceImpl(database)
     routing {
         get("/invoice") {
-            val message = invoiceService.getInvoices()
-            print(message)
-            call.respond(HttpStatusCode.OK, message.toList().toString())
+            val from = LocalDate.parse(call.parameters["from"])
+            val to = LocalDate.parse(call.parameters["to"])
+
+            val message = invoiceService.getInvoices(from, to)
+            call.respond(HttpStatusCode.OK, message.toList())
 
         }
         post("/invoice") {
 
-            invoiceService.requestInvoice(
+            val invoice = invoiceService.requestInvoice(
                 call.parameters["amount"]?.toBigDecimal() ?: throw IllegalArgumentException("Invalid Amount")
             )
-            call.respond(HttpStatusCode.OK)
+            call.respond(HttpStatusCode.OK, invoice)
         }
     }
 }

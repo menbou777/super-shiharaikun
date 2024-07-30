@@ -5,8 +5,10 @@ import Clients
 import Companies
 import Invoices
 import Users
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.s_shiharai.plugins.*
 import insertInitialData
+import io.ktor.serialization.jackson.jackson
 import io.ktor.serialization.kotlinx.json.json
 import io.ktor.server.application.*
 import io.ktor.server.engine.*
@@ -26,6 +28,12 @@ fun main() {
 
 fun Application.module() {
     configureRouting()
+    install(ContentNegotiation) {
+        jackson {
+            registerModules(JavaTimeModule())
+        }
+    }
+
 }
 
 fun connectToDatabase() {

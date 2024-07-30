@@ -1,7 +1,7 @@
 import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.transactions.transaction
 
-fun insertInitialData() {
+public fun insertInitialData() {
     transaction {
         Companies.insert {
             it[corporateName] = "CompanyA"

@@ -4,9 +4,9 @@ import org.jetbrains.exposed.sql.javatime.date
 object Companies : IntIdTable() {
     val corporateName = varchar("corporateName", 255)
     val representativeName = varchar("representativeName", 255)
-    val phoneNumber = varchar("phoneNumber", 20).nullable()
-    val postalCode = varchar("postalCode", 10).nullable()
-    val address = varchar("address", 255).nullable()
+    val phoneNumber = varchar("phoneNumber", 20)
+    val postalCode = varchar("postalCode", 10)
+    val address = varchar("address", 255)
 }
 
 object Users : IntIdTable() {
@@ -20,9 +20,9 @@ object Clients : IntIdTable() {
     val companyId = reference("companyId", Companies)
     val corporateName = varchar("corporateName", 255)
     val representativeName = varchar("representativeName", 255)
-    val phoneNumber = varchar("phoneNumber", 20).nullable()
-    val postalCode = varchar("postalCode", 10).nullable()
-    val address = varchar("address", 255).nullable()
+    val phoneNumber = varchar("phoneNumber", 20)
+    val postalCode = varchar("postalCode", 10)
+    val address = varchar("address", 255)
 }
 
 object ClientBankAccounts : IntIdTable() {
@@ -38,12 +38,12 @@ object Invoices : IntIdTable() {
     val clientId = reference("clientId", Clients)
     val issueDate = date("issueDate")
     val paymentAmount = decimal("paymentAmount", 10, 2)
-    val fee = decimal("fee", 10, 2).nullable()
-    val feeRate = decimal("feeRate", 5, 2).nullable()
-    val consumptionTax = decimal("consumptionTax", 10, 2).nullable()
-    val consumptionTaxRate = decimal("consumptionTaxRate", 5, 2).nullable()
+    val fee = decimal("fee", 10, 2)
+    val feeRate = decimal("feeRate", 5, 2)
+    val consumptionTax = decimal("consumptionTax", 10, 2)
+    val consumptionTaxRate = decimal("consumptionTaxRate", 5, 2)
     val invoiceAmount = decimal("invoiceAmount", 10, 2)
-    val paymentDueDate = date("paymentDueDate").nullable()
+    val paymentDueDate = date("paymentDueDate")
     val status = enumerationByName("status", 10, InvoiceStatus::class)
 }
 
