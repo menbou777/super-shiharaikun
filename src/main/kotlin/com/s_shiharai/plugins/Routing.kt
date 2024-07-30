@@ -8,6 +8,7 @@ import io.ktor.server.routing.*
 import io.ktor.util.logging.Logger
 import org.jetbrains.exposed.sql.Database
 
+
 fun Application.configureRouting() {
 
     val database = Database.connect(
@@ -24,6 +25,7 @@ fun Application.configureRouting() {
 
         }
         post("/invoice") {
+
             invoiceService.requestInvoice(
                 call.parameters["amount"]?.toBigDecimal() ?: throw IllegalArgumentException("Invalid Amount")
             )

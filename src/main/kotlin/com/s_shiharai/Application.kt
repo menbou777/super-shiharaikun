@@ -23,6 +23,7 @@ fun main() {
         .start(wait = true)
 }
 
+
 fun Application.module() {
     configureRouting()
 }
